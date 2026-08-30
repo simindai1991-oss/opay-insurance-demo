@@ -141,7 +141,7 @@
           <select id="e-gender"><option value="1">Male</option><option value="2">Female</option></select>
         </div>
         <button class="btn btn-primary btn-block" onclick="App.submitEditFamily()">Save changes</button>
-        <button class="btn btn-ghost btn-block btn-danger-text" style="margin-top:8px" id="edit-delete-btn" onclick="App.deleteFamilyMember(App.state.editingPersonId)">Delete member</button>
+        <button type="button" class="edit-delete-link" id="edit-delete-btn" onclick="App.deleteFamilyMember(App.state.editingPersonId)">Delete member</button>
       </div>
 
       <!-- Pay confirm modal (inside phone) -->

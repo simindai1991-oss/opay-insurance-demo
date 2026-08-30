@@ -152,12 +152,13 @@ body {
   border: 0; background: var(--opay-light); color: var(--opay-dark);
   border-radius: 999px; padding: 6px 12px; font-size: 11px; font-weight: 700; cursor: pointer; flex-shrink: 0;
 }
-.person-chip-actions { display: flex; gap: 6px; flex-shrink: 0; }
-.person-delete-btn {
-  border: 0; background: #fef2f2; color: #b91c1c;
-  border-radius: 999px; padding: 6px 12px; font-size: 11px; font-weight: 700; cursor: pointer; flex-shrink: 0;
+.edit-delete-link {
+  display: block; width: 100%; margin-top: 14px; padding: 0;
+  border: 0; background: transparent; color: #b91c1c;
+  font-size: 12px; font-weight: 500; text-decoration: underline;
+  text-align: center; cursor: pointer;
 }
-.btn-danger-text { color: #b91c1c; }
+.edit-delete-link:hover { color: #991b1b; }
 .my-policy-compact.clickable { cursor: pointer; }
 .footer-billing-label {
   display: block; width: 100%; text-align: center;

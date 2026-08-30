@@ -55,10 +55,7 @@ const App = {
           </div>
           ${
             person.relationType !== 'SELF'
-              ? `<div class="person-chip-actions">
-                  <button type="button" class="person-edit-btn" onclick="App.openEditDrawer('${person.personId}')">Edit</button>
-                  <button type="button" class="person-delete-btn" onclick="App.deleteFamilyMember('${person.personId}')">Delete</button>
-                </div>`
+              ? `<button type="button" class="person-edit-btn" onclick="App.openEditDrawer('${person.personId}')">Edit</button>`
               : ''
           }
         </div>`
