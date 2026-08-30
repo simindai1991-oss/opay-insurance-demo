@@ -1,0 +1,7 @@
+{
+  "demoUserId": "user_demo_001",
+  "demoNow": null,
+  "renewPaymentSuccess": true,
+  "lastOp": null,
+  "note": "【EXTRA】 demoNow=ISO clock; renewPaymentSuccess toggles mock auto-renew debit; lastOp=latest mutation trace"
+}

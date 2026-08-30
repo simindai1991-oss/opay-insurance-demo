@@ -1,0 +1,102 @@
+[
+  {
+    "timelineId": "tl_001",
+    "policyId": "pol_rose_active_001",
+    "actionType": "INITIAL_ENROLL",
+    "status": "ACTIVE",
+    "coverageStartDate": "2025-12-01",
+    "coverageEndDate": "2025-12-31",
+    "continuousStaySnapshot": 1,
+    "createdAt": "2025-12-01T10:05:00+01:00"
+  },
+  {
+    "timelineId": "tl_002",
+    "policyId": "pol_rose_active_001",
+    "actionType": "AUTO_RENEW",
+    "status": "ACTIVE",
+    "coverageStartDate": "2026-08-01",
+    "coverageEndDate": "2026-08-31",
+    "continuousStaySnapshot": 9,
+    "createdAt": "2026-08-01T09:00:00+01:00"
+  },
+  {
+    "timelineId": "tl_003",
+    "policyId": "pol_hygeia_suspended_001",
+    "actionType": "INITIAL_ENROLL",
+    "status": "ACTIVE",
+    "coverageStartDate": "2025-06-15",
+    "coverageEndDate": "2025-07-14",
+    "continuousStaySnapshot": 1,
+    "createdAt": "2025-06-15T11:05:00+01:00"
+  },
+  {
+    "timelineId": "tl_004",
+    "policyId": "pol_hygeia_suspended_001",
+    "actionType": "AUTO_RENEW",
+    "status": "SUSPENDED",
+    "coverageStartDate": "2026-07-15",
+    "coverageEndDate": "2026-08-14",
+    "continuousStaySnapshot": 14,
+    "createdAt": "2026-08-16T08:00:00+01:00"
+  },
+  {
+    "timelineId": "tl_005",
+    "policyId": "pol_reliance_expired_001",
+    "actionType": "INITIAL_ENROLL",
+    "status": "ACTIVE",
+    "coverageStartDate": "2024-08-01",
+    "coverageEndDate": "2024-10-31",
+    "continuousStaySnapshot": 1,
+    "createdAt": "2024-08-01T09:05:00+01:00"
+  },
+  {
+    "timelineId": "tl_006",
+    "policyId": "pol_reliance_expired_001",
+    "actionType": "POLICY_EXPIRED",
+    "status": "EXPIRED",
+    "coverageStartDate": "2025-05-01",
+    "coverageEndDate": "2025-07-31",
+    "continuousStaySnapshot": 12,
+    "createdAt": "2025-08-05T10:00:00+01:00"
+  },
+  {
+    "timelineId": "tl_007",
+    "policyId": "pol_aiico_terminated_001",
+    "actionType": "INITIAL_ENROLL",
+    "status": "ACTIVE",
+    "coverageStartDate": "2025-01-10",
+    "coverageEndDate": "2026-01-09",
+    "continuousStaySnapshot": 1,
+    "createdAt": "2025-01-10T12:05:00+01:00"
+  },
+  {
+    "timelineId": "tl_008",
+    "policyId": "pol_aiico_terminated_001",
+    "actionType": "POLICY_EXPIRED",
+    "status": "TERMINATED",
+    "coverageStartDate": "2025-01-10",
+    "coverageEndDate": "2026-01-09",
+    "continuousStaySnapshot": 3,
+    "createdAt": "2025-04-20T15:00:00+01:00"
+  },
+  {
+    "timelineId": "tl_009",
+    "policyId": "pol_supercare_pending_renewal_001",
+    "actionType": "INITIAL_ENROLL",
+    "status": "ACTIVE",
+    "coverageStartDate": "2026-03-01",
+    "coverageEndDate": "2026-03-31",
+    "continuousStaySnapshot": 1,
+    "createdAt": "2026-03-01T10:05:00+01:00"
+  },
+  {
+    "timelineId": "tl_010",
+    "policyId": "pol_supercare_pending_renewal_001",
+    "actionType": "AUTO_RENEW",
+    "status": "PENDING_RENEWAL",
+    "coverageStartDate": "2026-08-01",
+    "coverageEndDate": "2026-08-31",
+    "continuousStaySnapshot": 6,
+    "createdAt": "2026-08-29T22:00:00+01:00"
+  }
+]

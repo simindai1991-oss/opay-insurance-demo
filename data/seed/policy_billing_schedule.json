@@ -1,0 +1,74 @@
+[
+  {
+    "scheduleId": "sch_rose_009",
+    "policyId": "pol_rose_active_001",
+    "periodNumber": 9,
+    "paymentMode": "MONTHLY",
+    "coverageStartDate": "2026-08-01",
+    "coverageEndDate": "2026-08-31",
+    "expectedAmount": 1500,
+    "dueDate": "2026-08-01",
+    "status": "PAID",
+    "createdAt": "2026-07-31T00:00:00+01:00"
+  },
+  {
+    "scheduleId": "sch_rose_010",
+    "policyId": "pol_rose_active_001",
+    "periodNumber": 10,
+    "paymentMode": "MONTHLY",
+    "coverageStartDate": "2026-09-01",
+    "coverageEndDate": "2026-09-30",
+    "expectedAmount": 1500,
+    "dueDate": "2026-08-31",
+    "status": "WAITING",
+    "createdAt": "2026-08-29T00:00:00+01:00"
+  },
+  {
+    "scheduleId": "sch_hyg_015",
+    "policyId": "pol_hygeia_suspended_001",
+    "periodNumber": 15,
+    "paymentMode": "MONTHLY",
+    "coverageStartDate": "2026-08-15",
+    "coverageEndDate": "2026-09-14",
+    "expectedAmount": 1800,
+    "dueDate": "2026-08-14",
+    "status": "FAILED",
+    "createdAt": "2026-08-14T00:00:00+01:00"
+  },
+  {
+    "scheduleId": "sch_rel_004",
+    "policyId": "pol_reliance_expired_001",
+    "periodNumber": 4,
+    "paymentMode": "QUARTERLY",
+    "coverageStartDate": "2025-05-01",
+    "coverageEndDate": "2025-07-31",
+    "expectedAmount": 2400,
+    "dueDate": "2025-05-01",
+    "status": "PAID",
+    "createdAt": "2025-04-30T00:00:00+01:00"
+  },
+  {
+    "scheduleId": "sch_aiico_001",
+    "policyId": "pol_aiico_terminated_001",
+    "periodNumber": 1,
+    "paymentMode": "ANNUAL",
+    "coverageStartDate": "2025-01-10",
+    "coverageEndDate": "2026-01-09",
+    "expectedAmount": 8800,
+    "dueDate": "2025-01-10",
+    "status": "PAID",
+    "createdAt": "2025-01-10T00:00:00+01:00"
+  },
+  {
+    "scheduleId": "sch_sc_007",
+    "policyId": "pol_supercare_pending_renewal_001",
+    "periodNumber": 7,
+    "paymentMode": "MONTHLY",
+    "coverageStartDate": "2026-09-01",
+    "coverageEndDate": "2026-09-30",
+    "expectedAmount": 2500,
+    "dueDate": "2026-08-31",
+    "status": "PROCESSING",
+    "createdAt": "2026-08-29T22:00:00+01:00"
+  }
+]

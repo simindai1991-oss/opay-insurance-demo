@@ -1,0 +1,41 @@
+[
+  {
+    "personId": "person_self_001",
+    "userId": "user_demo_001",
+    "relationType": "SELF",
+    "firstName": "Ada",
+    "lastName": "Okafor",
+    "nin": "12345678901",
+    "phone": "08031234567",
+    "dob": "1992-05-14",
+    "gender": 2,
+    "isDefault": true,
+    "photoUrl": null
+  },
+  {
+    "personId": "person_spouse_001",
+    "userId": "user_demo_001",
+    "relationType": "SPOUSE",
+    "firstName": "Chinedu",
+    "lastName": "Okafor",
+    "nin": "12345678902",
+    "phone": "08039876543",
+    "dob": "1990-11-02",
+    "gender": 1,
+    "isDefault": false,
+    "photoUrl": null
+  },
+  {
+    "personId": "person_child_001",
+    "userId": "user_demo_001",
+    "relationType": "CHILD",
+    "firstName": "Amara",
+    "lastName": "Okafor",
+    "nin": "12345678903",
+    "phone": "08030000001",
+    "dob": "2018-03-20",
+    "gender": 2,
+    "isDefault": false,
+    "photoUrl": null
+  }
+]

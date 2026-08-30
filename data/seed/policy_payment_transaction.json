@@ -1,0 +1,79 @@
+[
+  {
+    "transactionId": "txn_rose_009_1",
+    "scheduleId": "sch_rose_009",
+    "policyId": "pol_rose_active_001",
+    "tradeAmount": 1500,
+    "paymentMethod": "OPAY_WALLET_AUTO_DEDUCT",
+    "tradeStatus": "SUCCESS",
+    "gatewayRefCode": "GW-OK-100901",
+    "errorMessage": null,
+    "tradeTime": "2026-08-01T09:00:12+01:00"
+  },
+  {
+    "transactionId": "txn_rose_001_free",
+    "scheduleId": "sch_rose_seed_free",
+    "policyId": "pol_rose_active_001",
+    "tradeAmount": 0,
+    "paymentMethod": "OPAY_WALLET_AUTO_DEDUCT",
+    "tradeStatus": "SUCCESS",
+    "gatewayRefCode": "GW-FREE-100001",
+    "errorMessage": null,
+    "tradeTime": "2025-12-01T10:02:00+01:00"
+  },
+  {
+    "transactionId": "txn_hyg_015_1",
+    "scheduleId": "sch_hyg_015",
+    "policyId": "pol_hygeia_suspended_001",
+    "tradeAmount": 1800,
+    "paymentMethod": "OPAY_WALLET_AUTO_DEDUCT",
+    "tradeStatus": "FAILED",
+    "gatewayRefCode": null,
+    "errorMessage": "Insufficient Balance",
+    "tradeTime": "2026-08-14T08:01:00+01:00"
+  },
+  {
+    "transactionId": "txn_hyg_015_2",
+    "scheduleId": "sch_hyg_015",
+    "policyId": "pol_hygeia_suspended_001",
+    "tradeAmount": 1800,
+    "paymentMethod": "OPAY_WALLET_AUTO_DEDUCT",
+    "tradeStatus": "FAILED",
+    "gatewayRefCode": null,
+    "errorMessage": "Insufficient Balance",
+    "tradeTime": "2026-08-15T08:01:00+01:00"
+  },
+  {
+    "transactionId": "txn_rel_004_1",
+    "scheduleId": "sch_rel_004",
+    "policyId": "pol_reliance_expired_001",
+    "tradeAmount": 2400,
+    "paymentMethod": "OPAY_WALLET_AUTO_DEDUCT",
+    "tradeStatus": "SUCCESS",
+    "gatewayRefCode": "GW-OK-REL-004",
+    "errorMessage": null,
+    "tradeTime": "2025-05-01T09:10:00+01:00"
+  },
+  {
+    "transactionId": "txn_aiico_001_1",
+    "scheduleId": "sch_aiico_001",
+    "policyId": "pol_aiico_terminated_001",
+    "tradeAmount": 8800,
+    "paymentMethod": "OPAY_WALLET_AUTO_DEDUCT",
+    "tradeStatus": "SUCCESS",
+    "gatewayRefCode": "GW-OK-AIICO-1",
+    "errorMessage": null,
+    "tradeTime": "2025-01-10T12:02:00+01:00"
+  },
+  {
+    "transactionId": "txn_sc_007_1",
+    "scheduleId": "sch_sc_007",
+    "policyId": "pol_supercare_pending_renewal_001",
+    "tradeAmount": 2500,
+    "paymentMethod": "OPAY_WALLET_AUTO_DEDUCT",
+    "tradeStatus": "PROCESSING",
+    "gatewayRefCode": null,
+    "errorMessage": null,
+    "tradeTime": "2026-08-29T22:00:30+01:00"
+  }
+]

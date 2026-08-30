@@ -1,0 +1,38 @@
+[
+  {
+    "enrolleeId": "enr_nem_001",
+    "personId": "person_self_001",
+    "userId": "user_demo_001",
+    "underwriterCode": "NEM",
+    "membershipNo": "101026/0",
+    "cifNumber": "CIF-NEM-88001",
+    "firstEnrolledDate": "2025-12-01"
+  },
+  {
+    "enrolleeId": "enr_hygeia_001",
+    "personId": "person_spouse_001",
+    "userId": "user_demo_001",
+    "underwriterCode": "HYGEIA",
+    "membershipNo": "HYG-55221",
+    "cifNumber": "CIF-HYG-11002",
+    "firstEnrolledDate": "2025-06-15"
+  },
+  {
+    "enrolleeId": "enr_reliance_001",
+    "personId": "person_self_001",
+    "userId": "user_demo_001",
+    "underwriterCode": "RELIANCE",
+    "membershipNo": "REL-90011",
+    "cifNumber": "CIF-REL-33009",
+    "firstEnrolledDate": "2024-08-01"
+  },
+  {
+    "enrolleeId": "enr_aiico_001",
+    "personId": "person_self_001",
+    "userId": "user_demo_001",
+    "underwriterCode": "AIICO",
+    "membershipNo": "AIICO-PA-7788",
+    "cifNumber": "CIF-AIICO-44001",
+    "firstEnrolledDate": "2025-01-10"
+  }
+]

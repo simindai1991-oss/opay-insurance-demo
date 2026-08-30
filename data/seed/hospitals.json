@@ -1,0 +1,98 @@
+[
+  {
+    "hospitalId": "hosp_lagos_001",
+    "planCodes": ["ROSE_PLAN", "SUPER_CARE", "HYGEIA_SOFTCARE"],
+    "name": "Ikeja Primary Care Clinic",
+    "address": "12 Allen Avenue, Ikeja",
+    "city": "Lagos",
+    "state": "Lagos",
+    "lga": "Ikeja",
+    "lat": 6.6018,
+    "lng": 3.3515,
+    "tier": 1
+  },
+  {
+    "hospitalId": "hosp_lagos_002",
+    "planCodes": ["ROSE_PLAN", "RELIANCE_BASIC"],
+    "name": "Surulere Family Hospital",
+    "address": "45 Adeniran Ogunsanya St, Surulere",
+    "city": "Lagos",
+    "state": "Lagos",
+    "lga": "Surulere",
+    "lat": 6.4969,
+    "lng": 3.3566,
+    "tier": 1
+  },
+  {
+    "hospitalId": "hosp_lagos_003",
+    "planCodes": ["ROSE_PLAN", "SUPER_CARE", "HYGEIA_SOFTCARE", "RELIANCE_BASIC"],
+    "name": "Lekki Phase 1 Medical Centre",
+    "address": "12 Admiralty Way, Lekki",
+    "city": "Lagos",
+    "state": "Lagos",
+    "lga": "Eti-Osa",
+    "lat": 6.4474,
+    "lng": 3.4700,
+    "tier": 1
+  },
+  {
+    "hospitalId": "hosp_abuja_001",
+    "planCodes": ["ROSE_PLAN", "SUPER_CARE", "HYGEIA_SOFTCARE", "RELIANCE_BASIC"],
+    "name": "Wuse Zone 4 Medical Centre",
+    "address": "Plot 5, Wuse Zone 4",
+    "city": "Abuja",
+    "state": "FCT",
+    "lga": "Abuja Municipal",
+    "lat": 9.0765,
+    "lng": 7.4786,
+    "tier": 1
+  },
+  {
+    "hospitalId": "hosp_abuja_002",
+    "planCodes": ["SUPER_CARE", "HYGEIA_SOFTCARE"],
+    "name": "Gwarinpa Community Hospital",
+    "address": "1st Avenue, Gwarinpa",
+    "city": "Abuja",
+    "state": "FCT",
+    "lga": "Bwari",
+    "lat": 9.1102,
+    "lng": 7.4065,
+    "tier": 1
+  },
+  {
+    "hospitalId": "hosp_ph_001",
+    "planCodes": ["ROSE_PLAN", "RELIANCE_BASIC"],
+    "name": "Port Harcourt Garden City Clinic",
+    "address": "21 Aba Road",
+    "city": "Port Harcourt",
+    "state": "Rivers",
+    "lga": "Port Harcourt",
+    "lat": 4.8156,
+    "lng": 7.0498,
+    "tier": 1
+  },
+  {
+    "hospitalId": "hosp_ibadan_001",
+    "planCodes": ["HYGEIA_SOFTCARE", "RELIANCE_BASIC", "SUPER_CARE"],
+    "name": "Bodija Health Post",
+    "address": "UI Road, Bodija",
+    "city": "Ibadan",
+    "state": "Oyo",
+    "lga": "Ibadan North",
+    "lat": 7.4432,
+    "lng": 3.9003,
+    "tier": 1
+  },
+  {
+    "hospitalId": "hosp_kano_001",
+    "planCodes": ["ROSE_PLAN", "RELIANCE_BASIC"],
+    "name": "Kano City General Clinic",
+    "address": "12 Bompai Road",
+    "city": "Kano",
+    "state": "Kano",
+    "lga": "Nassarawa",
+    "lat": 12.0022,
+    "lng": 8.5920,
+    "tier": 1
+  }
+]

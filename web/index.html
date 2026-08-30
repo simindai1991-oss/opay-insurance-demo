@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>OPay Insurance Demo</title>
+  <link rel="stylesheet" href="css/app.css" />
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+  <div class="workspace">
+    <div class="phone" id="app">
+      <div class="badge-mode" id="mode-badge">...</div>
+      <div class="toast" id="toast"></div>
+
+      <section class="view active" id="view-home">
+        <div class="topbar">
+          <button class="icon-btn" title="reset" onclick="App.resetDemo()"><i class="ph ph-arrow-counter-clockwise"></i></button>
+          <h1>Insurance</h1>
+          <button class="icon-btn"><i class="ph ph-question"></i></button>
+        </div>
+        <div class="scroll no-scrollbar" id="home-buy"></div>
+      </section>
+
+      <section class="view" id="view-policies">
+        <div class="topbar">
+          <button class="icon-btn" onclick="App.go('home')"><i class="ph ph-caret-left"></i></button>
+          <h1>My Policies</h1>
+          <span style="width:36px"></span>
+        </div>
+        <div class="scroll no-scrollbar" id="policies-body"></div>
+      </section>
+
+      <section class="view" id="view-detail">
+        <div class="topbar">
+          <button class="icon-btn" onclick="App.go('home')"><i class="ph ph-caret-left"></i></button>
+          <h1>Plan details</h1>
+          <span style="width:36px"></span>
+        </div>
+        <div class="scroll no-scrollbar" id="detail-body"></div>
+        <div class="footer-bar">
+          <button class="btn btn-primary btn-block" id="btn-pay">Continue to pay</button>
+        </div>
+      </section>
+
+      <section class="view" id="view-processing">
+        <div class="scroll" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px">
+          <div class="spinner"></div>
+          <h2 id="processing-title" style="margin:0">Processing payment…</h2>
+          <p class="muted" id="processing-sub">Debiting wallet / creating schedule</p>
+        </div>
+      </section>
+
+      <section class="view" id="view-policy">
+        <div class="topbar">
+          <button class="icon-btn" onclick="App.backFromPolicy()"><i class="ph ph-caret-left"></i></button>
+          <h1>My Policy Detail</h1>
+          <span style="width:36px"></span>
+        </div>
+        <div class="scroll no-scrollbar" id="policy-body"></div>
+        <div class="footer-bar">
+          <button class="btn btn-ghost btn-block" onclick="App.go('home')">Get more policies</button>
+        </div>
+      </section>
+
+      <section class="view" id="view-txns">
+        <div class="topbar">
+          <button class="icon-btn" onclick="App.go('policy')"><i class="ph ph-caret-left"></i></button>
+          <h1>Payment Record</h1>
+          <span style="width:36px"></span>
+        </div>
+        <div class="scroll no-scrollbar" id="txns-body"></div>
+      </section>
+
+      <section class="view" id="view-timeline">
+        <div class="topbar">
+          <button class="icon-btn" onclick="App.go('policy')"><i class="ph ph-caret-left"></i></button>
+          <h1>Status timeline</h1>
+          <span style="width:36px"></span>
+        </div>
+        <div class="scroll no-scrollbar" id="timeline-body"></div>
+      </section>
+
+      <section class="view" id="view-hospitals">
+        <div class="topbar">
+          <button class="icon-btn" onclick="App.backFromHospitals()"><i class="ph ph-caret-left"></i></button>
+          <h1>Find Hospital</h1>
+          <span style="width:36px"></span>
+        </div>
+        <div class="scroll no-scrollbar" id="hospitals-body"></div>
+      </section>
+
+      <section class="view" id="view-covers-detail">
+        <div class="topbar">
+          <button class="icon-btn" onclick="App.backFromCovers()"><i class="ph ph-caret-left"></i></button>
+          <h1>Cover details</h1>
+          <span style="width:36px"></span>
+        </div>
+        <div class="scroll no-scrollbar" id="covers-detail-body"></div>
+      </section>
+
+      <div class="drawer-overlay" id="drawer-overlay" onclick="App.closeDrawer()"></div>
+      <div class="drawer" id="drawer">
+        <div class="row" style="margin-bottom:12px">
+          <strong>Add family member</strong>
+          <button class="icon-btn" onclick="App.closeDrawer()"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="field"><label>Relation</label>
+          <select id="f-relation">
+            <option value="SPOUSE">Spouse</option>
+            <option value="CHILD">Child</option>
+            <option value="PARENT">Parent</option>
+            <option value="OTHER">Other</option>
+          </select>
+        </div>
+        <div class="field"><label>First name</label><input id="f-first" /></div>
+        <div class="field"><label>Last name</label><input id="f-last" /></div>
+        <div class="field"><label>NIN</label><input id="f-nin" /></div>
+        <div class="field"><label>Phone</label><input id="f-phone" /></div>
+        <div class="field"><label>DOB</label><input id="f-dob" type="date" /></div>
+        <div class="field"><label>Gender</label>
+          <select id="f-gender"><option value="1">Male</option><option value="2">Female</option></select>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="App.submitFamily()">Save</button>
+      </div>
+
+      <div class="drawer-overlay" id="edit-overlay" onclick="App.closeEditDrawer()"></div>
+      <div class="drawer" id="edit-drawer">
+        <div class="row" style="margin-bottom:12px">
+          <strong>Edit family member</strong>
+          <button class="icon-btn" onclick="App.closeEditDrawer()"><i class="ph ph-x"></i></button>
+        </div>
+        <p class="edit-notice">Changes to member information apply to new enrollments only and will not affect existing policies.</p>
+        <div class="field"><label>First name</label><input id="e-first" /></div>
+        <div class="field"><label>Last name</label><input id="e-last" /></div>
+        <div class="field"><label>NIN</label><input id="e-nin" /></div>
+        <div class="field"><label>Phone</label><input id="e-phone" /></div>
+        <div class="field"><label>DOB</label><input id="e-dob" type="date" /></div>
+        <div class="field"><label>Gender</label>
+          <select id="e-gender"><option value="1">Male</option><option value="2">Female</option></select>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="App.submitEditFamily()">Save changes</button>
+      </div>
+
+      <!-- Pay confirm modal (inside phone) -->
+      <div class="drawer-overlay" id="pay-overlay" onclick="App.closePayModal()"></div>
+      <div class="drawer pay-modal" id="pay-modal">
+        <div class="row" style="margin-bottom:8px">
+          <strong>Confirm payment</strong>
+          <button class="icon-btn" onclick="App.closePayModal()"><i class="ph ph-x"></i></button>
+        </div>
+        <div id="pay-modal-body"></div>
+        <button class="btn btn-primary btn-block" style="margin-top:12px" id="btn-pay-confirm">Confirm</button>
+      </div>
+    </div>
+
+    <!-- Debug side panel (outside phone) -->
+    <aside class="debug-panel" id="debug-panel">
+      <h2>Demo Debug</h2>
+      <div class="debug-section">
+        <h3>Time travel</h3>
+        <div class="muted" id="dbg-now">demoNow: —</div>
+        <div class="dbg-row" id="dbg-travel-btns">
+          <button id="dbg-adv-1" onclick="Debug.advance(1)">+1 day</button>
+          <button id="dbg-adv-7" onclick="Debug.advance(7)">+7 days</button>
+          <button id="dbg-adv-30" onclick="Debug.advance(30)">+30 days</button>
+        </div>
+        <div class="muted" id="dbg-travel-status"></div>
+        <label class="dbg-switch">
+          <span>Renew debit success</span>
+          <button class="switch on" id="dbg-renew-switch" onclick="Debug.toggleRenew()"><span></span></button>
+        </label>
+        <div class="muted" id="dbg-renew-hint">ON = auto-renew payments succeed</div>
+      </div>
+      <div class="debug-section">
+        <h3>Last operation</h3>
+        <pre id="dbg-last-op" class="dbg-pre">—</pre>
+      </div>
+      <div class="debug-section">
+        <h3>Tables</h3>
+        <select id="dbg-table"></select>
+        <button onclick="Debug.refreshDump()" style="margin-top:8px">Refresh</button>
+        <pre id="dbg-table-view" class="dbg-pre">—</pre>
+      </div>
+    </aside>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/pricing.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
