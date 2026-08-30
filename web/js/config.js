@@ -3,7 +3,7 @@ window.DEMO_CONFIG = {
   mode: 'auto', // 'auto' | 'api' | 'static'
   apiBase: '',
   seedBase: 'data/seed',
-  storageKey: 'opay_insurance_demo_v4',
+  storageKey: 'opay_insurance_demo_v5',
   modeOverrideKey: 'opay_insurance_demo_mode_override',
   payProcessingMs: 2000,
   activatePendingMs: 5000,

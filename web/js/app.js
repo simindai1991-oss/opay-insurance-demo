@@ -377,12 +377,19 @@ const App = {
       </div>`;
   },
 
+  activePolicyForPerson(planCode, personId) {
+    return this.state.policies.find(
+      (p) => p.planCode === planCode && p.personId === personId && p.status === 'ACTIVE'
+    );
+  },
+
   async renderDetail() {
     const p = this.state.plan;
     const covers = this.state.covers.length ? this.state.covers : await DemoApi.getCovers(p.planCode);
     this.state.covers = covers;
     const modes = p.supportedPaymentModes || ['MONTHLY'];
-    const preview = await DemoApi.pricingPreview(p.planCode, this.state.paymentMode);
+    const activePolicy = this.activePolicyForPerson(p.planCode, this.state.personId);
+    const preview = await DemoApi.pricingPreview(p.planCode, this.state.paymentMode, this.state.personId);
     const cov = this.coveragePreview(this.state.paymentMode);
     this.state.preview = preview;
     this.state.payable = preview.payableAmount;
@@ -393,6 +400,10 @@ const App = {
     const brochure = p.brochureName || 'Product Terms & Conditions';
     const brochureUrl = p.brochureUrl || '#';
     const planPolicies = this.state.policies.filter((x) => x.planCode === p.planCode);
+    const payNowLabel = activePolicy ? 'List price' : 'Pay now';
+    const payNowNote = activePolicy
+      ? '<p class="muted payment-mode-note">First-month promo does not apply while coverage is active.</p>'
+      : `<p class="muted payment-mode-note">${this.paymentModeNote()}</p>`;
 
     document.getElementById('detail-body').innerHTML = `
       ${this.planHeroCard(p)}
@@ -416,14 +427,14 @@ const App = {
             })
             .join('')}
         </div>
-        <div class="row"><span class="muted">Pay now</span><strong style="color:var(--opay-dark)">${Pricing.formatNaira(preview.payableAmount)}</strong></div>
+        <div class="row"><span class="muted">${payNowLabel}</span><strong style="color:var(--opay-dark)">${Pricing.formatNaira(preview.payableAmount)}</strong></div>
         <div class="row" style="margin-top:6px"><span class="muted">Then each cycle</span><strong>${Pricing.formatNaira(this.state.recurring)}</strong></div>
-        <p class="muted payment-mode-note">${this.paymentModeNote()}</p>
+        ${payNowNote}
       </div>
 
       <div class="card insured-section">
         <div class="row insured-section-head">
-          <strong>Insured person</strong>
+          <strong>Select insured person</strong>
           <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px" onclick="App.openDrawer()">+ Family</button>
         </div>
         ${this.renderPersonChips(persons)}
@@ -442,8 +453,17 @@ const App = {
       </div>
     `;
 
-    document.getElementById('btn-pay').textContent =
-      preview.payableAmount === 0 ? 'Continue (₦0 first month)' : `Continue · ${Pricing.formatNaira(preview.payableAmount)}`;
+    const btnPay = document.getElementById('btn-pay');
+    if (activePolicy) {
+      btnPay.textContent = `Next auto-debit · ${activePolicy.nextBillingDate}`;
+      btnPay.onclick = () => this.openPolicy(activePolicy.policyId, 'detail');
+    } else {
+      btnPay.textContent =
+        preview.payableAmount === 0 && preview.firstPeriodEligible !== false
+          ? 'Continue (₦0 first month)'
+          : `Continue · ${Pricing.formatNaira(preview.payableAmount)}`;
+      btnPay.onclick = () => this.openPayModal();
+    }
   },
 
   async setMode(m) {
@@ -543,6 +563,11 @@ const App = {
   async openPayModal() {
     if (!this.state.personId) {
       this.toast('Select an insured person');
+      return;
+    }
+    const activePolicy = this.activePolicyForPerson(this.state.plan.planCode, this.state.personId);
+    if (activePolicy) {
+      this.toast(`Coverage active — next auto-debit ${activePolicy.nextBillingDate}`);
       return;
     }
     this.state.payModalAction = 'enroll';

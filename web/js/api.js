@@ -675,14 +675,28 @@
       await ensureStaticDb();
       return { ok: true };
     },
-    async pricingPreview(planCode, paymentMode) {
+    async pricingPreview(planCode, paymentMode, personId) {
       const plan = await this.getPlan(planCode);
+      const listPrice = window.Pricing.listPrice(plan, paymentMode);
+      let payableAmount = firstPeriodAmount(plan, paymentMode);
+      let firstPeriodEligible = true;
+      if (personId) {
+        const db = await ensureStaticDb();
+        const hasActive = db.policy_master.some(
+          (p) => p.personId === personId && p.planCode === planCode && p.status === 'ACTIVE'
+        );
+        if (hasActive) {
+          payableAmount = listPrice;
+          firstPeriodEligible = false;
+        }
+      }
       return {
         planCode,
         paymentMode,
-        listPrice: window.Pricing.listPrice(plan, paymentMode),
-        payableAmount: firstPeriodAmount(plan, paymentMode),
-        recurringAmount: window.Pricing.listPrice(plan, paymentMode),
+        listPrice,
+        payableAmount,
+        recurringAmount: listPrice,
+        firstPeriodEligible,
       };
     },
     async dump() {
@@ -762,10 +776,10 @@
       return apiFetch('/api/hospitals' + (qs ? `?${qs}` : ''));
     },
     reset: () => apiFetch('/api/demo/reset', { method: 'POST', body: '{}' }),
-    pricingPreview: async (planCode, paymentMode) => {
-      const r = await apiFetch(
-        `/api/pricing/preview?planCode=${encodeURIComponent(planCode)}&paymentMode=${encodeURIComponent(paymentMode)}`
-      );
+    pricingPreview: async (planCode, paymentMode, personId) => {
+      const q = new URLSearchParams({ planCode, paymentMode });
+      if (personId) q.set('personId', personId);
+      const r = await apiFetch(`/api/pricing/preview?${q.toString()}`);
       const plan = await apiFetch(`/api/plans/${encodeURIComponent(planCode)}`);
       r.recurringAmount = window.Pricing.listPrice(plan, paymentMode);
       return r;

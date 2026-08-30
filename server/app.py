@@ -613,7 +613,7 @@ def enroll(body: EnrollRequest) -> dict:
 
 
 @app.get("/api/pricing/preview")
-def pricing_preview(planCode: str, paymentMode: str) -> dict:
+def pricing_preview(planCode: str, paymentMode: str, personId: str | None = None) -> dict:
     plan = get_plan(planCode)
     if paymentMode not in MODE_MONTHS:
         raise HTTPException(400, "Invalid paymentMode")
@@ -625,12 +625,25 @@ def pricing_preview(planCode: str, paymentMode: str) -> dict:
             "ANNUAL": "annualPrice",
         }[paymentMode]
     )
+    payable = first_period_amount(plan, paymentMode)
+    first_period_eligible = True
+    if personId:
+        policies = store.read_table("policy_master")
+        if any(
+            p["personId"] == personId
+            and p["planCode"] == planCode
+            and p["status"] == "ACTIVE"
+            for p in policies
+        ):
+            payable = list_price
+            first_period_eligible = False
     return {
         "planCode": planCode,
         "paymentMode": paymentMode,
         "listPrice": list_price,
-        "payableAmount": first_period_amount(plan, paymentMode),
+        "payableAmount": payable,
         "recurringAmount": list_price,
+        "firstPeriodEligible": first_period_eligible,
         "rule": "MONTHLY first period free (0); else (months-1)*monthlyPrice",
     }
 
