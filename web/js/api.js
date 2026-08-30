@@ -22,13 +22,41 @@
     ANNUAL: 'annualPrice',
   };
 
+  function isLocalDev() {
+    const h = location.hostname;
+    return h === 'localhost' || h === '127.0.0.1' || h === '[::1]';
+  }
+
+  function getModeOverride() {
+    if (!isLocalDev()) return null;
+    const v = localStorage.getItem(cfg().modeOverrideKey);
+    return v === 'api' || v === 'static' ? v : null;
+  }
+
+  function setModeOverride(mode) {
+    localStorage.setItem(cfg().modeOverrideKey, mode);
+    window.__DEMO_MODE_RESOLVED = mode;
+  }
+
+  function clearModeOverride() {
+    localStorage.removeItem(cfg().modeOverrideKey);
+    window.__DEMO_MODE_RESOLVED = undefined;
+  }
+
   function resolveMode() {
+    const override = getModeOverride();
+    if (override) return override;
     const m = cfg().mode;
     if (m === 'api' || m === 'static') return m;
     return window.__DEMO_MODE_RESOLVED || 'static';
   }
 
   async function detectMode() {
+    const override = getModeOverride();
+    if (override) {
+      window.__DEMO_MODE_RESOLVED = override;
+      return override;
+    }
     if (cfg().mode !== 'auto') {
       window.__DEMO_MODE_RESOLVED = cfg().mode;
       return cfg().mode;
@@ -98,12 +126,33 @@
     return window.Pricing.firstPeriodAmount(plan, mode);
   }
 
+  function cloneMetaSnapshot(meta) {
+    if (!meta || typeof meta !== 'object') return meta;
+    const { lastOp, ...rest } = meta;
+    return structuredClone(rest);
+  }
+
+  function sanitizeAffected(affected) {
+    if (!affected || typeof affected !== 'object') return affected;
+    const out = {};
+    for (const [key, val] of Object.entries(affected)) {
+      if (key === 'meta' && Array.isArray(val)) {
+        out.meta = val.map((m) => cloneMetaSnapshot(m));
+      } else if (Array.isArray(val)) {
+        out[key] = val.map((item) => (item && typeof item === 'object' ? structuredClone(item) : item));
+      } else {
+        out[key] = val;
+      }
+    }
+    return out;
+  }
+
   function setLastOp(db, action, summary, affected) {
     db.meta.lastOp = {
       at: new Date().toISOString(),
       action,
       summary,
-      affected,
+      affected: sanitizeAffected(affected),
     };
   }
 
@@ -735,6 +784,16 @@
   window.DemoApi = {
     detectMode,
     getMode: resolveMode,
+    isLocalDev,
+    canToggleMode: isLocalDev,
+    getModeOverride,
+    setModeOverride,
+    clearModeOverride,
+    toggleModeOverride() {
+      const next = resolveMode() === 'api' ? 'static' : 'api';
+      setModeOverride(next);
+      return next;
+    },
     async ready() {
       await detectMode();
       if (resolveMode() === 'static') await ensureStaticDb();

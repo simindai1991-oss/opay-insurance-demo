@@ -66,12 +66,41 @@ const App = {
 
   async init() {
     await DemoApi.ready();
-    document.getElementById('mode-badge').textContent = `mode: ${DemoApi.getMode()}`;
+    this.setupModeBadge();
     document.getElementById('btn-pay').onclick = () => this.openPayModal();
     document.getElementById('btn-pay-confirm').onclick = () => this.confirmPay();
     await this.refresh();
     await Debug.init();
     this.go('home');
+  },
+
+  setupModeBadge() {
+    const badge = document.getElementById('mode-badge');
+    const mode = DemoApi.getMode();
+    const override = DemoApi.getModeOverride();
+    if (DemoApi.canToggleMode()) {
+      badge.textContent = override ? `mode: ${mode} *` : `mode: ${mode} ↕`;
+      badge.classList.add('clickable');
+      badge.title = 'Click: switch api ↔ static · Shift+click: auto-detect';
+      badge.onclick = (e) => this.switchDemoMode(e.shiftKey);
+    } else {
+      badge.textContent = `mode: ${mode}`;
+      badge.classList.remove('clickable');
+      badge.removeAttribute('title');
+      badge.onclick = null;
+    }
+  },
+
+  switchDemoMode(clearOverride) {
+    if (!DemoApi.canToggleMode()) return;
+    if (clearOverride) {
+      DemoApi.clearModeOverride();
+      this.toast('Mode: auto-detect — reloading…');
+    } else {
+      const next = DemoApi.toggleModeOverride();
+      this.toast(`Mode: ${next} — reloading…`);
+    }
+    setTimeout(() => location.reload(), 350);
   },
 
   toast(msg) {
