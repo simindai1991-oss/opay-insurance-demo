@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -227,7 +227,35 @@ def update_person(person_id: str, body: PersonUpdate) -> dict:
             {"user_insured_person": [p]},
         )
         return p
-    raise HTTPException(404, "Person not found")
+        raise HTTPException(404, "Person not found")
+
+
+BLOCKING_POLICY_STATUSES = ("ACTIVE", "PENDING_ENROLLMENT", "PENDING_RENEWAL", "SUSPENDED")
+
+
+@app.delete("/api/persons/{person_id}")
+def delete_person(person_id: str) -> dict:
+    people = store.read_table("user_insured_person")
+    person = next((p for p in people if p["personId"] == person_id), None)
+    if not person:
+        raise HTTPException(404, "Person not found")
+    if person.get("relationType") == "SELF":
+        raise HTTPException(400, "Cannot remove account holder")
+    policies = store.read_table("policy_master")
+    if any(
+        p["personId"] == person_id and p["status"] in BLOCKING_POLICY_STATUSES for p in policies
+    ):
+        raise HTTPException(400, "Cannot remove member with active or pending policies")
+    store.write_table(
+        "user_insured_person",
+        [p for p in people if p["personId"] != person_id],
+    )
+    timetravel.set_last_op(
+        "DELETE_PERSON",
+        f"Removed {person['firstName']} {person['lastName']}",
+        {"user_insured_person": [person]},
+    )
+    return {"ok": True, "personId": person_id}
 
 
 # ---------- policies ----------
@@ -249,7 +277,8 @@ def get_policy(policy_id: str) -> dict:
 @app.get("/api/policies/{policy_id}/timeline")
 def policy_timeline(policy_id: str) -> list:
     rows = [t for t in store.read_table("policy_status_timeline") if t["policyId"] == policy_id]
-    return sorted(rows, key=lambda x: x["createdAt"])
+    rows = [t for t in rows if t.get("status") != "PENDING_ENROLLMENT"]
+    return sorted(rows, key=lambda x: x.get("createdAt", ""))
 
 
 @app.get("/api/policies/{policy_id}/transactions")
@@ -579,25 +608,10 @@ def enroll(body: EnrollRequest) -> dict:
             "tradeTime": now_iso(),
         }
     )
-    timelines = store.read_table("policy_status_timeline")
-    timelines.append(
-        {
-            "timelineId": store.next_id("tl"),
-            "policyId": policy_id,
-            "actionType": "INITIAL_ENROLL",
-            "status": "PENDING_ENROLLMENT",
-            "coverageStartDate": policy["currentCycleStart"],
-            "coverageEndDate": policy["currentCycleEnd"],
-            "continuousStaySnapshot": months,
-            "createdAt": now_iso(),
-        }
-    )
-
     store.write_table("enrollee_profile", enrollees)
     store.write_table("policy_master", policies)
     store.write_table("policy_billing_schedule", schedules)
     store.write_table("policy_payment_transaction", txns)
-    store.write_table("policy_status_timeline", timelines)
     timetravel.set_last_op(
         "ENROLL",
         f"Created policy {policy_id} PENDING_ENROLLMENT payable={amount}",
@@ -606,7 +620,6 @@ def enroll(body: EnrollRequest) -> dict:
             "enrollee_profile": [enrollees[-1]],
             "policy_billing_schedule": [schedules[-1]],
             "policy_payment_transaction": [txns[-1]],
-            "policy_status_timeline": [timelines[-1]],
         },
     )
     return {"policy": policy, "payableAmount": amount, "membershipNo": membership}
@@ -676,6 +689,19 @@ def list_hospitals(
 
 
 # ---------- static web ----------
+FAVICON_SVG = (
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">'
+    '<rect width="32" height="32" rx="8" fill="#00B876"/>'
+    '<text x="16" y="22" text-anchor="middle" font-size="18" font-family="sans-serif" fill="#fff">O</text>'
+    '</svg>'
+)
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon() -> Response:
+    return Response(content=FAVICON_SVG, media_type="image/svg+xml")
+
+
 @app.get("/")
 def index() -> FileResponse:
     return FileResponse(WEB / "index.html")

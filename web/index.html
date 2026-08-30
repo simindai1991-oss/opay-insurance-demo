@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>OPay Insurance Demo</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
   <link rel="stylesheet" href="css/app.css" />
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
@@ -140,6 +141,7 @@
           <select id="e-gender"><option value="1">Male</option><option value="2">Female</option></select>
         </div>
         <button class="btn btn-primary btn-block" onclick="App.submitEditFamily()">Save changes</button>
+        <button class="btn btn-ghost btn-block btn-danger-text" style="margin-top:8px" id="edit-delete-btn" onclick="App.deleteFamilyMember(App.state.editingPersonId)">Delete member</button>
       </div>
 
       <!-- Pay confirm modal (inside phone) -->

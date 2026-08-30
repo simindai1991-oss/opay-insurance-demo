@@ -55,7 +55,10 @@ const App = {
           </div>
           ${
             person.relationType !== 'SELF'
-              ? `<button type="button" class="person-edit-btn" onclick="App.openEditDrawer('${person.personId}')">Edit</button>`
+              ? `<div class="person-chip-actions">
+                  <button type="button" class="person-edit-btn" onclick="App.openEditDrawer('${person.personId}')">Edit</button>
+                  <button type="button" class="person-delete-btn" onclick="App.deleteFamilyMember('${person.personId}')">Delete</button>
+                </div>`
               : ''
           }
         </div>`
@@ -124,6 +127,24 @@ const App = {
       'covers-detail': 'view-covers-detail',
     };
     document.getElementById(map[name]).classList.add('active');
+    this.scrollViewToTop(name);
+  },
+
+  scrollViewToTop(name) {
+    const scrollIds = {
+      home: 'home-buy',
+      policies: 'policies-body',
+      detail: 'detail-body',
+      policy: 'policy-body',
+      txns: 'txns-body',
+      timeline: 'timeline-body',
+      hospitals: 'hospitals-body',
+      'covers-detail': 'covers-detail-body',
+    };
+    const id = scrollIds[name];
+    if (!id) return;
+    const el = document.getElementById(id);
+    if (el) el.scrollTop = 0;
   },
 
   displayStatus(status) {
@@ -238,8 +259,9 @@ const App = {
   },
 
   renderTimelineInline(rows) {
-    if (!rows.length) return `<div class="muted" style="margin-top:8px">No status history yet.</div>`;
-    const sorted = [...rows].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    const visible = this.filterTimelineRows(rows);
+    if (!visible.length) return `<div class="muted" style="margin-top:8px">No status history yet.</div>`;
+    const sorted = [...visible].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     return `<div class="timeline-inline">
       ${sorted
         .slice(0, 5)
@@ -255,6 +277,10 @@ const App = {
         )
         .join('')}
     </div>`;
+  },
+
+  filterTimelineRows(rows) {
+    return (rows || []).filter((t) => t.status !== 'PENDING_ENROLLMENT');
   },
 
   async refresh() {
@@ -362,10 +388,10 @@ const App = {
             } else if (p.status === 'EXPIRED') {
               action = `<button class="btn btn-primary btn-sm" onclick="event.stopPropagation();App.openReactivateModal('${p.policyId}')">Re-active</button>`;
             } else if (p.status === 'ACTIVE') {
-              action = `<div class="next-debit"><span class="muted">Next debit</span><strong>${p.nextBillingDate}</strong></div>`;
+              action = `<div class="next-billing"><span class="muted">Next billing date</span><strong>${p.nextBillingDate}</strong></div>`;
             }
             return `
-          <div class="my-policy-compact">
+          <div class="my-policy-compact clickable" onclick="App.openPolicy('${p.policyId}','detail')">
             <div class="my-policy-compact-main">
               <div class="name">${this.personName(p.personId)}</div>
               <div class="meta">${this.statusPill(p.status)} · ${freq} · ${Pricing.formatNaira(amount)}</div>
@@ -455,14 +481,39 @@ const App = {
 
     const btnPay = document.getElementById('btn-pay');
     if (activePolicy) {
-      btnPay.textContent = `Next auto-debit · ${activePolicy.nextBillingDate}`;
-      btnPay.onclick = () => this.openPolicy(activePolicy.policyId, 'detail');
+      if (activePolicy.autoRenewEnabled) {
+        btnPay.className = 'footer-billing-label';
+        btnPay.disabled = false;
+        btnPay.textContent = `Next billing date · ${activePolicy.nextBillingDate}`;
+        btnPay.onclick = null;
+      } else {
+        btnPay.className = 'btn btn-primary btn-block';
+        btnPay.disabled = false;
+        btnPay.textContent = 'Enable auto-renewal to keep insured';
+        btnPay.onclick = () => this.enableAutoRenewFromDetail(activePolicy.policyId);
+      }
     } else {
+      btnPay.className = 'btn btn-primary btn-block';
+      btnPay.disabled = false;
       btnPay.textContent =
         preview.payableAmount === 0 && preview.firstPeriodEligible !== false
           ? 'Continue (₦0 first month)'
           : `Continue · ${Pricing.formatNaira(preview.payableAmount)}`;
       btnPay.onclick = () => this.openPayModal();
+    }
+  },
+
+  async enableAutoRenewFromDetail(policyId) {
+    try {
+      const updated = await DemoApi.setAutoRenew(policyId, true);
+      this.state.policies = await DemoApi.getPolicies();
+      const idx = this.state.policies.findIndex((p) => p.policyId === policyId);
+      if (idx >= 0) this.state.policies[idx] = updated;
+      await this.renderDetail();
+      await Debug.refresh();
+      this.toast('Auto-renewal enabled');
+    } catch (e) {
+      this.toast(e.message || String(e));
     }
   },
 
@@ -474,6 +525,27 @@ const App = {
   pickPerson(id) {
     this.state.personId = id;
     this.renderDetail();
+  },
+
+  async deleteFamilyMember(personId) {
+    const person = this.state.persons.find((p) => p.personId === personId);
+    if (!person || person.relationType === 'SELF') return;
+    const label = `${person.firstName} ${person.lastName}`;
+    if (!confirm(`Remove ${label} from family members?`)) return;
+    try {
+      await DemoApi.deletePerson(personId);
+      this.state.persons = await DemoApi.getPersons();
+      if (this.state.personId === personId) {
+        const self = this.state.persons.find((p) => p.relationType === 'SELF');
+        this.state.personId = self ? self.personId : this.state.persons[0]?.personId || null;
+      }
+      if (this.state.editingPersonId === personId) this.closeEditDrawer();
+      if (this.state.plan) await this.renderDetail();
+      await Debug.refresh();
+      this.toast('Family member removed');
+    } catch (e) {
+      this.toast(e.message || String(e));
+    }
   },
 
   openDrawer() {
@@ -688,6 +760,8 @@ const App = {
   backFromPolicy() {
     if (this.state.policyFrom === 'policies') {
       this.openPolicies();
+    } else if (this.state.policyFrom === 'detail') {
+      this.go('detail');
     } else {
       this.go('home');
     }
@@ -727,7 +801,7 @@ const App = {
       <div class="card auto-renew-card ${renewDisabled ? 'disabled' : ''}">
         <div>
           <strong>Auto-Renewal</strong>
-          <div class="muted">Wallet auto-debit on each billing date</div>
+          <div class="muted">Your wallet is auto-debited 1 day before each coverage period ends to keep you covered.</div>
         </div>
         <button class="switch ${p.autoRenewEnabled ? 'on' : ''}" ${renewDisabled ? 'disabled' : ''}
           onclick="App.toggleAutoRenew()"><span></span></button>
@@ -756,10 +830,11 @@ const App = {
           <button class="link-btn" onclick="App.openCoversDetail('${p.planCode}','policy')">Details</button>
         </div>
         ${this.renderCoversList(covers)}
-        <div class="timeline-card">
-          <strong>Timeline</strong>
-          ${this.renderTimelineInline(timelineRows)}
-        </div>
+      </div>
+
+      <div class="card">
+        <strong>Timeline</strong>
+        ${this.renderTimelineInline(timelineRows)}
       </div>
 
       <p class="disclaimer">
@@ -808,6 +883,8 @@ const App = {
     try {
       const updated = await DemoApi.setAutoRenew(p.policyId, !p.autoRenewEnabled);
       this.state.policy = updated;
+      const idx = this.state.policies.findIndex((x) => x.policyId === updated.policyId);
+      if (idx >= 0) this.state.policies[idx] = updated;
       await this.renderPolicy(p.policyId);
       await Debug.refresh();
       this.toast(`Auto-renew ${updated.autoRenewEnabled ? 'ON' : 'OFF'}`);
@@ -895,7 +972,7 @@ const App = {
   },
 
   async openTimeline() {
-    const rows = await DemoApi.timeline(this.state.policy.policyId);
+    const rows = this.filterTimelineRows(await DemoApi.timeline(this.state.policy.policyId));
     const sorted = [...rows].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     document.getElementById('timeline-body').innerHTML = `
       <div class="timeline">

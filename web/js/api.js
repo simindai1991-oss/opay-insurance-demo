@@ -360,6 +360,24 @@
       lsSet(db);
       return p;
     },
+    async deletePerson(id) {
+      const db = await ensureStaticDb();
+      const person = db.user_insured_person.find((x) => x.personId === id);
+      if (!person) throw new Error('Person not found');
+      if (person.relationType === 'SELF') throw new Error('Cannot remove account holder');
+      const blocking = ['ACTIVE', 'PENDING_ENROLLMENT', 'PENDING_RENEWAL', 'SUSPENDED'];
+      if (
+        db.policy_master.some((p) => p.personId === id && blocking.includes(p.status))
+      ) {
+        throw new Error('Cannot remove member with active or pending policies');
+      }
+      db.user_insured_person = db.user_insured_person.filter((x) => x.personId !== id);
+      setLastOp(db, 'DELETE_PERSON', `Removed ${person.firstName} ${person.lastName}`, {
+        user_insured_person: [structuredClone(person)],
+      });
+      lsSet(db);
+      return { ok: true, personId: id };
+    },
     async getCovers(planCode) {
       const db = await ensureStaticDb();
       return (db.plan_cover_config || [])
@@ -379,7 +397,7 @@
     async timeline(id) {
       const db = await ensureStaticDb();
       return db.policy_status_timeline
-        .filter((t) => t.policyId === id)
+        .filter((t) => t.policyId === id && t.status !== 'PENDING_ENROLLMENT')
         .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
     },
     async transactions(id) {
@@ -505,23 +523,11 @@
         tradeTime: nowIso(db),
       };
       db.policy_payment_transaction.push(txn);
-      const tl = {
-        timelineId: nextId('tl'),
-        policyId,
-        actionType: 'INITIAL_ENROLL',
-        status: 'PENDING_ENROLLMENT',
-        coverageStartDate: policy.currentCycleStart,
-        coverageEndDate: policy.currentCycleEnd,
-        continuousStaySnapshot: months,
-        createdAt: nowIso(db),
-      };
-      db.policy_status_timeline.push(tl);
       setLastOp(db, 'ENROLL', `Created ${policyId} payable=${amount}`, {
         policy_master: [policy],
         enrollee_profile: [enrollee],
         policy_billing_schedule: [sch],
         policy_payment_transaction: [txn],
-        policy_status_timeline: [tl],
       });
       lsSet(db);
       return { policy, payableAmount: amount, membershipNo: membership };
@@ -748,6 +754,8 @@
     createPerson: (body) => apiFetch('/api/persons', { method: 'POST', body: JSON.stringify(body) }),
     updatePerson: (id, body) =>
       apiFetch(`/api/persons/${encodeURIComponent(id)}`, { method: 'PATCH', body: JSON.stringify(body) }),
+    deletePerson: (id) =>
+      apiFetch(`/api/persons/${encodeURIComponent(id)}`, { method: 'DELETE', body: '{}' }),
     getPolicies: () => apiFetch('/api/policies'),
     getPolicy: (id) => apiFetch(`/api/policies/${encodeURIComponent(id)}`),
     timeline: (id) => apiFetch(`/api/policies/${encodeURIComponent(id)}/timeline`),
@@ -819,6 +827,7 @@
     getPersons: (...a) => client().getPersons(...a),
     createPerson: (...a) => client().createPerson(...a),
     updatePerson: (...a) => client().updatePerson(...a),
+    deletePerson: (...a) => client().deletePerson(...a),
     getPolicies: (...a) => client().getPolicies(...a),
     getPolicy: (...a) => client().getPolicy(...a),
     timeline: (...a) => client().timeline(...a),
